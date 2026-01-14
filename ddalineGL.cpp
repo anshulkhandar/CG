@@ -1,27 +1,18 @@
 #include<iostream>
 #include<GL/glut.h>
 using namespace std;
+int xa,ya,xb,yb;
 int Round(float a)
 {
   return (int) (a + 0.5);
 }
 void Ddaline()
 {
-    int xa = 100,ya=20,xb=120,yb=80,dx,dy,steps;
     glClear(GL_COLOR_BUFFER_BIT);
     glPointSize(3.0f);
     glBegin(GL_POINTS);
-
-    // cout<<"enter Xa : ";
-    // cin>>xa;
-    // cout<<"enter Ya : ";
-    // cin>>ya;
-
-    // cout<<"enter Xb : ";
-    // cin>>xb;
-    // cout<<"enter Yb : ";
-    // cin>>yb;
-
+    
+    int dx,dy,steps;
     dx = xb-xa;
     dy = yb-ya;
     if (abs(dx) > abs(dy))
@@ -34,8 +25,8 @@ void Ddaline()
         //sharp slope
         steps = abs(dy);
     }
-    float xinc = dx/(float)steps;
-    float yinc = dy/(float)steps;
+    float xinc = (float)(dx)/steps;
+    float yinc = (float)(dy)/steps;
 
     float x = xa;
     float y = ya;
@@ -55,12 +46,22 @@ void Ddaline()
 }
 int main(int argc, char **argv)
 {
+	cout<<"enter Xa : ";
+    cin>>xa;
+    cout<<"enter Ya : ";
+    cin>>ya;
+
+    cout<<"enter Xb : ";
+    cin>>xb;
+    cout<<"enter Yb : ";
+    cin>>yb;	
+	
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 
     glutInitWindowPosition(0,0);
     glutInitWindowSize(640,480);
-    glutCreateWindow("Plot");
+    glutCreateWindow("DDALINE");
 
     glClearColor(0,0,0,0);
     glColor3f(1,1,1);
