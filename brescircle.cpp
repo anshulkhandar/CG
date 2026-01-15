@@ -1,13 +1,12 @@
 #include<iostream>
 #include<GL/glut.h>
 using namespace std;
+
+int xc, yc, r;
 void brescircle()
 {
   glClear(GL_COLOR_BUFFER_BIT);
   glBegin(GL_POINTS);
-  int xc = 200;
-  int yc = 200;
-  int r = 100;
   
   int x = 0;
   int y = r;
@@ -41,12 +40,20 @@ void brescircle()
 }
 int main(int argc, char **argv)
 {
+  cout<<"----Enter cordiantes of center ----";
+  cout<<"Enter XC : ";
+  cin>>xc;
+  cout<<"Enter XC : ";
+  cin>>yc;
+  cout<<"Enter Radius : ";
+  cin>>r;
+  
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
   
   glutInitWindowPosition(0,0);
   glutInitWindowSize(640,480);
-  glutCreateWindow("plot");
+  glutCreateWindow("Circle");
   
   glClearColor(0,0,0,1);
   glColor3f(1,1,1);
