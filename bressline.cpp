@@ -73,6 +73,15 @@ void Draw()
 
 int main(int argc, char **argv)
 {
+  cout<<"enter xa : ";
+  cin>>xa;
+  cout<<"enter ya : ";
+  cin>>ya;
+  cout<<"enter xb : ";
+  cin>>xb;
+  cout<<"enter yb : ";
+  cin>>yb;
+  
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
   
