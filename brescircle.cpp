@@ -40,10 +40,10 @@ void brescircle()
 }
 int main(int argc, char **argv)
 {
-  cout<<"----Enter cordiantes of center ----";
-  cout<<"Enter XC : ";
+  cout<<"----Enter cordiantes of center ---- \n";
+  cout<<"Enter xC : ";
   cin>>xc;
-  cout<<"Enter XC : ";
+  cout<<"Enter yC : ";
   cin>>yc;
   cout<<"Enter Radius : ";
   cin>>r;
