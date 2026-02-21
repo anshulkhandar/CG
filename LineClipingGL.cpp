@@ -165,54 +165,69 @@ void linecliping()
 // round helper
 int Round(float a){ return (int)(a+0.5); }
 
-// helper DDA for draw() — emits GL vertex calls, must be called between glBegin()/glEnd()
 void DDA_draw(int x1,int y1,int x2,int y2)
 {
 	int dx = x2 - x1;
 	int dy = y2 - y1;
-	int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-	if(steps==0){ glVertex2d(x1,y1); return; }
-	float xinc = (float)dx/steps;
-	float yinc = (float)dy/steps;
-	float x = x1; float y = y1;
+	int steps;
+	if (abs(dx) > abs(dy))
+	{
+		// gentle slope
+		steps = abs(dx);
+	}
+	else
+	{
+		// sharp slope
+		steps = abs(dy);
+	}
+	if (steps == 0) steps = 1;
+
+	float xinc = (float)(dx) / steps;
+	float yinc = (float)(dy) / steps;
+
+	float x = x1;
+	float y = y1;
+	cout << "X\tY\txplot\typlot\n";
+	cout << x << "\t" << y << "\t" << Round(x) << "\t" << Round(y) << endl;
 	glVertex2d(Round(x), Round(y));
-	for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x), Round(y)); }
+	for (int i = 0; i < steps; i++)
+	{
+		x = x + xinc;
+		y = y + yinc;
+		cout << x << "\t" << y << "\t" << Round(x) << "\t" << Round(y) << endl;
+		glVertex2d(Round(x), Round(y));
+	}
 }
 
-// display callback — all GL calls must be here
 void draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
+	glPointSize(3.0f);
+
+	glBegin(GL_POINTS);
 
 	// draw clipping rectangle (white)
 	glColor3f(1,1,1);
-	glBegin(GL_POINTS);
 	DDA_draw(xmin,ymin,xmax,ymin);
 	DDA_draw(xmax,ymin,xmax,ymax);
 	DDA_draw(xmax,ymax,xmin,ymax);
 	DDA_draw(xmin,ymax,xmin,ymin);
-	glEnd();
 
 	// draw original line in red
 	glColor3f(1,0,0);
-	glBegin(GL_POINTS);
 	DDA_draw(xa,ya,xb,yb);
-	glEnd();
 
+	// overlay clipped segments in green when appropriate
+	glColor3f(0,1,0);
 	if(clipStatus==0){
 		// accepted — draw green full line over red
-		glColor3f(0,1,0);
-		glBegin(GL_POINTS);
 		DDA_draw(xa,ya,xb,yb);
-		glEnd();
 	} else if(clipStatus==2){
 		// partial — draw clipped segment in green
-		glColor3f(0,1,0);
-		glBegin(GL_POINTS);
 		DDA_draw(clip_xa,clip_ya,clip_xb,clip_yb);
-		glEnd();
 	}
 
+	glEnd();
 	glFlush();
 }
 
