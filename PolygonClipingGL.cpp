@@ -20,9 +20,44 @@ int Round(float a)
     return (int)(a + 0.5);
 }
 
-void left_clip(int xa, int ya, int xb, int yb)
+void ddaline(float xa, float ya, float xb, float yb)
 {
-	float m = (float)(yb-ya)/(xb-xa);
+    int dx = (int)(xb - xa);
+    int dy = (int)(yb - ya);
+    int steps;
+    if (abs(dx) > abs(dy))
+    {
+        // gentle slope
+        steps = abs(dx);
+    }
+    else
+    {
+        // sharp slope
+        steps = abs(dy);
+    }
+    if (steps == 0) steps = 1;
+
+    float xinc = (float)(dx) / (float)steps;
+    float yinc = (float)(dy) / (float)steps;
+
+    float x = xa;
+    float y = ya;
+    // debug output (keeps user's original prints)
+    cout << "X\tY\txplot\typlot\n";
+    cout << x << "\t" << y << "\t" << Round(x) << "\t" << Round(y) << endl;
+    glVertex2d(Round(x), Round(y));
+    for (int i = 0; i < steps; i++)
+    {
+        x = x + xinc;
+        y = y + yinc;
+        cout << x << "\t" << y << "\t" << Round(x) << "\t" << Round(y) << endl;
+        glVertex2d(Round(x), Round(y));
+    }
+}
+
+void left_clip(float xa, float ya, float xb, float yb)
+{
+    float m = (yb - ya) / (xb - xa);
 	
 	if(xa>xmin && xb>xmin)
 	{
@@ -49,9 +84,9 @@ void left_clip(int xa, int ya, int xb, int yb)
 	}
 }
 
-void right_clip(int xa, int ya, int xb, int yb)
+void right_clip(float xa, float ya, float xb, float yb)
 {
-	float m = (float)(yb-ya)/(xb-xa);
+    float m = (yb - ya) / (xb - xa);
 	
 	if(xa<xmax && xb<xmax)
 	{
@@ -78,9 +113,9 @@ void right_clip(int xa, int ya, int xb, int yb)
 	}
 }
 
-void bottom_clip(int xa, int ya, int xb, int yb)
+void bottom_clip(float xa, float ya, float xb, float yb)
 {
-	float m = (float)(yb-ya)/(xb-xa);
+    float m = (yb - ya) / (xb - xa);
 	
 	if(ya>ymin && yb>ymin)
 	{
@@ -106,9 +141,9 @@ void bottom_clip(int xa, int ya, int xb, int yb)
 	}
 }
 
-void top_clip(int xa, int ya, int xb, int yb)
+void top_clip(float xa, float ya, float xb, float yb)
 {
-	float m = (float)(yb-ya)/(xb-xa);
+    float m = (yb - ya) / (xb - xa);
 	
 	if(ya<ymax && yb<ymax)
 	{
@@ -134,85 +169,38 @@ void top_clip(int xa, int ya, int xb, int yb)
 	}
 }
 
-// draw function performing DDA inside
+// draw function performing DDA inside — now uses ddaline helper with a single glBegin/glEnd
 void draw()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glPointSize(3.0f);
 
+    glBegin(GL_POINTS);
+
     // draw clipping rectangle in white
     glColor3f(1,1,1);
-    glBegin(GL_POINTS);
-    {
-        int dx, dy, steps;
-        float x, y, xinc, yinc;
-        // edge1 (xmin,ymin) to (xmax,ymin)
-        dx = xmax - xmin; dy = ymin - ymin;
-        steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-        x = xmin; y = ymin;
-        glVertex2d(Round(x), Round(y));
-        xinc = (float)dx/steps; yinc = (float)dy/steps;
-        for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x),Round(y)); }
-        // edge2
-        dx = xmax - xmax; dy = ymax - ymin;
-        steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-        x = xmax; y = ymin;
-        glVertex2d(Round(x), Round(y));
-        xinc = (float)dx/steps; yinc = (float)dy/steps;
-        for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x),Round(y)); }
-        // edge3
-        dx = xmin - xmax; dy = ymax - ymax;
-        steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-        x = xmax; y = ymax;
-        glVertex2d(Round(x), Round(y));
-        xinc = (float)dx/steps; yinc = (float)dy/steps;
-        for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x),Round(y)); }
-        // edge4
-        dx = xmin - xmin; dy = ymin - ymax;
-        steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-        x = xmin; y = ymax;
-        glVertex2d(Round(x), Round(y));
-        xinc = (float)dx/steps; yinc = (float)dy/steps;
-        for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x),Round(y)); }
-    }
-    glEnd();
+    ddaline((float)xmin, (float)ymin, (float)xmax, (float)ymin);
+    ddaline((float)xmax, (float)ymin, (float)xmax, (float)ymax);
+    ddaline((float)xmax, (float)ymax, (float)xmin, (float)ymax);
+    ddaline((float)xmin, (float)ymax, (float)xmin, (float)ymin);
 
     // draw original polygon in red
     glColor3f(1,0,0);
-    glBegin(GL_POINTS);
-    {
-        for(int j=0;j<origCount;j++){
-            int ni=(j+1)%origCount;
-            int dx = (int)orig[0][ni] - (int)orig[0][j];
-            int dy = (int)orig[1][ni] - (int)orig[1][j];
-            int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-            float x = orig[0][j];
-            float y = orig[1][j];
-            glVertex2d(Round(x), Round(y));
-            float xinc=(float)dx/steps, yinc=(float)dy/steps;
-            for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x),Round(y)); }
-        }
+    for(int j=0;j<origCount;j++){
+        int ni=(j+1)%origCount;
+        ddaline(orig[0][j], orig[1][j], orig[0][ni], orig[1][ni]);
     }
-    glEnd();
 
-    // draw clipped polygon in green
+    // draw clipped polygon in green (if any)
     if(finalCount>0){
         glColor3f(0,1,0);
-        glBegin(GL_POINTS);
         for(int j=0;j<finalCount;j++){
             int ni=(j+1)%finalCount;
-            int dx = (int)output[0][ni] - (int)output[0][j];
-            int dy = (int)output[1][ni] - (int)output[1][j];
-            int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
-            float x = output[0][j];
-            float y = output[1][j];
-            glVertex2d(Round(x), Round(y));
-            float xinc=(float)dx/steps, yinc=(float)dy/steps;
-            for(int i=0;i<steps;i++){ x+=xinc; y+=yinc; glVertex2d(Round(x),Round(y)); }
+            ddaline(output[0][j], output[1][j], output[0][ni], output[1][ni]);
         }
-        glEnd();
     }
 
+    glEnd();
     glFlush();
 }
 
@@ -276,12 +264,11 @@ int main()
         curr[1][i] = output[1][i];
     }
 
-    // right edge
+    // right edge (preserve original input ordering accuracy)
     k = 0;
     for(int i=0;i<currCount;i++){
         int ni = (i+1)%currCount;
-        right_clip((int)curr[0][i], (int)curr[1][i],
-                   (int)curr[0][ni], (int)curr[1][ni]);
+        right_clip(curr[0][i], curr[1][i], curr[0][ni], curr[1][ni]);
     }
     currCount = k;
     for(int i=0;i<currCount;i++){
@@ -293,8 +280,7 @@ int main()
     k = 0;
     for(int i=0;i<currCount;i++){
         int ni = (i+1)%currCount;
-        bottom_clip((int)curr[0][i], (int)curr[1][i],
-                    (int)curr[0][ni], (int)curr[1][ni]);
+        bottom_clip(curr[0][i], curr[1][i], curr[0][ni], curr[1][ni]);
     }
     currCount = k;
     for(int i=0;i<currCount;i++){
@@ -306,8 +292,7 @@ int main()
     k = 0;
     for(int i=0;i<currCount;i++){
         int ni = (i+1)%currCount;
-        top_clip((int)curr[0][i], (int)curr[1][i],
-                 (int)curr[0][ni], (int)curr[1][ni]);
+        top_clip(curr[0][i], curr[1][i], curr[0][ni], curr[1][ni]);
     }
     finalCount = k;
 
