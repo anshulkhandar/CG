@@ -215,7 +215,7 @@ void draw()
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
     // collect clipping window and a single line from console before opening window
     cout << "enter xmin : ";
@@ -240,7 +240,7 @@ int main()
     linecliping();
 
     // set up OpenGL window
-    glutInit();
+    glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(0,0);
