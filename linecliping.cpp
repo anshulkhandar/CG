@@ -2,152 +2,82 @@
 //#include<GL/glut.h>
 using namespace std;
 
-int outa[4]={0,0,0,0};
-int outb[4]={0,0,0,0};	
-int xa,ya,xb,yb,xmin,ymin,xmax,ymax;
+int xmin, ymin, xmax, ymax;
+int k=0;
+float output[2][10];
 
-void outcode(int x, int y, int out[])
+void left_clip(int xa, int ya, int xb, int yb)
 {
-	if(x<xmin)
+	float m = (float)(yb-ya)/(xb-xa);
+	
+	if(xa>xmin && xb>xmin)
 	{
-		out[3]=1;
-	}
-	if(x>xmax)
-	{
-		out[2]=1;
-	}
-	if(y<ymin)
-	{
-		out[1]=1;
-	}
-	if(y>ymax)
-	{
-		out[0]=1;
+		output[0][k] = xb;
+		output[1][k] = yb;
+		k++;
 	}
 	
-}
-
-void newpointfind(int x1, int y1, int out[], float m)
-{
-    int x = x1;
-    int y = y1;
-    
-    // Clip against vertical boundaries (LEFT/RIGHT)
-    if(out[3]==1)  // LEFT
-    {
-        x = xmin;
-        y = y1 + m * (xmin - x1);
-    }
-    else if(out[2]==1)  // RIGHT
-    {
-        x = xmax;
-        y = y1 + m * (xmax - x1);
-    }
-    
-    // Clip against horizontal boundaries (BOTTOM/TOP)
-    if(out[1]==1)  // BOTTOM
-    {
-        y = ymin;
-        x = x1 + (ymin - y1) / m;
-    }
-    else if(out[0]==1)  // TOP
-    {
-        y = ymax;
-        x = x1 + (ymax - y1) / m;
-    }
-
-    cout<<"----point after cliping ----\n";
-    cout<<"("<<x<<","<<y<<")\n";
-}
-
-void linecliping()
-{
-	int flag1 = 0; //  =0 if accepted =1 if rejucted or partially accepted
-	int flag2 = 0; // =0 if partially accepted =1 if rejected
-	
-	cout<<"enter xmin : ";
-	cin>>xmin;
-	cout<<"enter ymin : ";
-	cin>>ymin;
-	cout<<"enter xmax : ";
-	cin>>xmax;
-	cout<<"enter ymax : ";
-	cin>>ymax;
-	
-	
-	cout<<"enter xa : ";
-	cin>>xa;
-	cout<<"enter ya : ";
-	cin>>ya;
-	cout<<"enter xb : ";
-	cin>>xb;
-	cout<<"enter yb : ";
-	cin>>yb;
-	
-	outcode(xa,ya,outa);//outcode caluculation for a
-	outcode(xb,yb,outb);//outcode caluculation for b
-
-	//<------------------->
-	
-	cout<<"\n -------Outcodes------- \n";
-	cout<<"outcode a : ";
-	for(int i=0; i<4; i++)
+	if(xa>xmin && xb<xmin)
 	{
-		cout<<outa[i];
-	}
-	cout<<"\n";
-	cout<<"outcode b : ";
-	for(int i=0; i<4; i++)
-	{
-		cout<<outb[i];
-	}
-	cout<<"\n\n";
-	
-	//<------------------->
-	
-	for(int i=0; i<4; i++)
-	{
-		if(outa[i]==1 || outb[i]==1)
-		{
-			flag1=1; //rejected or partially accepted
-			break;
-		}
+		output[0][k] = xmin;
+		output[1][k] = yb+m*(xmin-xb);
+		k++;
 	}
 	
-	if(flag1==0)
+	if(xa<xmin && xb>xmin)
 	{
-		cout<<"the line is accepted \n";
-	}
-	else
-	{
-		int outpnr[4] ={0,0,0,0};
-		for(int i =0; i<4; i++)
-		{
-			outpnr[i] = outa[i] && outb[i];
-			
-			if(outpnr[i]==1)
-			{
-				flag2=1; //rejected
-				break;
-			}
-		}
-		if(flag2==0)
-		{
-			cout<<"the line is partially accepted \n";	
-			float m = (float) (yb-ya)/(xb-xa);
-			newpointfind(xa,ya,outa,m);
-			newpointfind(xb,yb,outb,m);
-		}
-		else
-		{
-			cout<<"the line is rejected \n";
-		}
+		output[0][k] = xmin;
+		output[1][k] = ya+m*(xmin-xa);
+		k++;
+		output[0][k] = xb;
+		output[1][k] =yb;
+		k++;
 	}
 }
-
-
 
 int main()
 {
-	linecliping();
+	cout<<"Enter xmin: ";
+	cin>>xmin;
+	cout<<"Enter ymin: ";
+	cin>>ymin;
+	cout<<"Enter xmax: ";
+	cin>>xmax;
+	cout<<"Enter ymax: ";
+	cin>>ymax;
+	cout<<"\n";	
+	
+	int v;
+	cout<<"Enter no of vertices : ";
+	cin>>v;
+	
+	int input[2][10];
+	
+	cout<<"----Enter the co-ordiantes of the points----\n";
+	for(int i=0;i<v;i++)
+	{
+		cout<<i+1<<":\n";
+		cout<<"x : ";
+		cin>>input[0][i];
+		cout<<"y : ";
+		cin>>input[1][i];
+	}
+	
+	cout<<"\n\t X\ty\n";
+	for(int i=0;i<v;i++)
+	{
+		cout<<i+1<<"\t"<<input[0][i]<<"\t"<<input[1][i]<<"\n";
+	}
+	
+	
+	//left clip
+	for(int i=0; i<v; i++)
+	{
+		left_clip(input[0][i],input[1][i],input[0][(i+1)%v],input[1][(i+1)%v]);
+	}
+	cout<<"\n\t X\ty\n";
+	for(int i=0;i<v;i++)
+	{
+		cout<<i+1<<"\t"<<output[0][i]<<"\t"<<input[1][i]<<"\n";
+	}
 }
