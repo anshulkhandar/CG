@@ -126,13 +126,13 @@ void bottom_clip(float xa, float ya, float xb, float yb)
 	
 	if(ya>ymin && yb<ymin)
 	{
-		output[0][k] = xb+m*(ymin-yb);
+		output[0][k] = xb+(ymin-yb)/m;
 		output[1][k] = ymin;
 		k++;
 	}
 	if(ya<ymin && yb>ymin)
 	{
-		output[0][k] = xa+m*(ymin-ya);
+		output[0][k] = xa+(ymin-ya)/m;
 		output[1][k] = ymin;
 		k++;
 		output[0][k] = xb;
@@ -154,13 +154,13 @@ void top_clip(float xa, float ya, float xb, float yb)
 	
 	if(ya<ymax && yb>ymax)
 	{
-		output[0][k] = xb+m*(ymax-yb);
+		output[0][k] = xb+(ymax-yb)/m;
 		output[1][k] = ymax;
 		k++;
 	}
 	if(ya>ymax && yb<ymax)
 	{
-		output[0][k] = xa+m*(ymax-ya);
+		output[0][k] = xa+(ymax-ya)/m;
 		output[1][k] = ymax;
 		k++;
 		output[0][k] = xb;
@@ -186,15 +186,18 @@ void draw()
 
     // draw original polygon in red
     glColor3f(1,0,0);
-    for(int j=0;j<origCount;j++){
+    for(int j=0;j<origCount;j++)
+    {
         int ni=(j+1)%origCount;
         ddaline(orig[0][j], orig[1][j], orig[0][ni], orig[1][ni]);
     }
 
     // draw clipped polygon in green (if any)
-    if(finalCount>0){
+    if(finalCount>0)
+    {
         glColor3f(0,1,0);
-        for(int j=0;j<finalCount;j++){
+        for(int j=0;j<finalCount;j++)
+        {
             int ni=(j+1)%finalCount;
             ddaline(output[0][j], output[1][j], output[0][ni], output[1][ni]);
         }
@@ -204,7 +207,7 @@ void draw()
     glFlush();
 }
 
-int main()
+int main(int argc, char **argv)
 {
     cout<<"Enter xmin: ";
     cin>>xmin;
@@ -232,9 +235,9 @@ int main()
         cin>>input[1][i];
     }
 
-    // copy to global orig for drawing later
     origCount = v;
-    for(int i=0;i<v;i++){
+    for(int i=0;i<v;i++)
+    {
         orig[0][i] = input[0][i];
         orig[1][i] = input[1][i];
     }
@@ -245,28 +248,32 @@ int main()
         cout<<i+1<<"\t"<<input[0][i]<<"\t"<<input[1][i]<<"\n";
     }
 
-    // successive clipping, each stage uses previous output as input
+    // successive clipping
     float curr[2][10];
     int currCount = v;
-    for(int i=0;i<v;i++){
+    for(int i=0;i<v;i++)
+    {
         curr[0][i] = input[0][i];
         curr[1][i] = input[1][i];
     }
 
-    // left edge — call using original input order (1-2,2-3,...)
+    // left 
     k = 0;
-    for(int i=0;i<v;i++){
+    for(int i=0;i<v;i++)
+    {
         left_clip(input[0][i], input[1][i], input[0][(i+1)%v], input[1][(i+1)%v]);
     }
     currCount = k;
-    for(int i=0;i<currCount;i++){
+    for(int i=0;i<currCount;i++)
+    {
         curr[0][i] = output[0][i];
         curr[1][i] = output[1][i];
     }
 
-    // right edge (preserve original input ordering accuracy)
+    // right 
     k = 0;
-    for(int i=0;i<currCount;i++){
+    for(int i=0;i<currCount;i++)
+    {
         int ni = (i+1)%currCount;
         right_clip(curr[0][i], curr[1][i], curr[0][ni], curr[1][ni]);
     }
@@ -276,28 +283,31 @@ int main()
         curr[1][i] = output[1][i];
     }
 
-    // bottom edge
+    // bottom 
     k = 0;
-    for(int i=0;i<currCount;i++){
+    for(int i=0;i<currCount;i++)
+    {
         int ni = (i+1)%currCount;
         bottom_clip(curr[0][i], curr[1][i], curr[0][ni], curr[1][ni]);
     }
     currCount = k;
-    for(int i=0;i<currCount;i++){
+    for(int i=0;i<currCount;i++)
+    {
         curr[0][i] = output[0][i];
         curr[1][i] = output[1][i];
     }
 
-    // top edge
+    // top 
     k = 0;
-    for(int i=0;i<currCount;i++){
+    for(int i=0;i<currCount;i++)
+    {
         int ni = (i+1)%currCount;
         top_clip(curr[0][i], curr[1][i], curr[0][ni], curr[1][ni]);
     }
     finalCount = k;
 
-    // set up OpenGL window
-    glutInit();
+    //--------------
+    glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(0,0);
@@ -307,3 +317,4 @@ int main()
     glutDisplayFunc(draw);
     glutMainLoop();
     return 0;
+}
