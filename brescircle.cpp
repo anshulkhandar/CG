@@ -39,7 +39,7 @@ void MidPointCircle()
 {  
   int x = 0;
   int y = r;
-  int d = 5/4 - r;
+  float d = (5/4) - r;
   
   do
   {
@@ -84,6 +84,7 @@ void draw()
   glEnd();
   glFlush();  
 }
+
 int main(int argc, char **argv)
 {
   int option;
