@@ -7,7 +7,7 @@ using namespace std;
 int v;
 int vertex[2][10];
 
-float bc[3] = {0.0, 0.0, 0.0};   // boundary color (black now for white bg)
+float bc[3] = {0.0, 0.0, 0.0};   // boundary color (black)
 float fc1[3];                    // boundary fill color
 float fc2[3];                    // flood fill color
 float bg[3] = {1.0, 1.0, 1.0};  // background color (white)
@@ -69,21 +69,33 @@ void DDA_draw(int x1, int y1, int x2, int y2)
     int dx = x2 - x1;
     int dy = y2 - y1;
 
-    int steps = max(abs(dx), abs(dy));
-    if (steps == 0) steps = 1;
+    nt steps;
+    if (abs(dx) > abs(dy))
+    {
+        // gentle slope
+        steps = abs(dx);
+    }
+    else
+    {
+        // sharp slope
+        steps = abs(dy);
+    }
 
-    float xinc = (float)dx / steps;
-    float yinc = (float)dy / steps;
+    float xinc = (float)(dx) / (float)steps;
+    float yinc = (float)(dy) / (float)steps;
 
-    float x = x1, y = y1;
-
-    glVertex2i(Round(x), Round(y));
-
+    float x = xa;
+    float y = ya;
+    // debug output (keeps user's original prints)
+    cout << "X\tY\txplot\typlot\n";
+    cout << x << "\t" << y << "\t" << Round(x) << "\t" << Round(y) << endl;
+    glVertex2d(Round(x), Round(y));
     for (int i = 0; i < steps; i++)
     {
-        x += xinc;
-        y += yinc;
-        glVertex2i(Round(x), Round(y));
+        x = x + xinc;
+        y = y + yinc;
+        cout << x << "\t" << y << "\t" << Round(x) << "\t" << Round(y) << endl;
+        glVertex2d(Round(x), Round(y));
     }
 }
 
