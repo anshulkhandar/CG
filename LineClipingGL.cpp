@@ -219,11 +219,6 @@ void DDA_draw(int x1, int y1, int x2, int y2)
         steps = abs(dy);
     }
 
-    if (steps == 0)
-    {
-        steps = 1;
-    }
-
     float xinc = (float)dx / steps;
     float yinc = (float)dy / steps;
 
