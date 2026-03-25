@@ -64,12 +64,12 @@ int Round(float a) {
     return (int)(a + 0.5);
 }
 
-void DDA_draw(int x1, int y1, int x2, int y2)
+void DDA_draw(int xa, int ya, int xb, int yb)
 {
-    int dx = x2 - x1;
-    int dy = y2 - y1;
+    int dx = xb - xa;
+    int dy = yb - ya;
 
-    nt steps;
+    int steps;
     if (abs(dx) > abs(dy))
     {
         // gentle slope
