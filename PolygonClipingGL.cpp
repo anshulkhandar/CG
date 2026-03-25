@@ -36,8 +36,8 @@ void ddaline(float xa, float ya, float xb, float yb)
         steps = abs(dy);
     }
 
-    float xinc = (float)(dx) / (float)steps;
-    float yinc = (float)(dy) / (float)steps;
+    float xinc = (float)(dx) / steps;
+    float yinc = (float)(dy) / steps;
 
     float x = xa;
     float y = ya;
