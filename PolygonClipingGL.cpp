@@ -35,7 +35,6 @@ void ddaline(float xa, float ya, float xb, float yb)
         // sharp slope
         steps = abs(dy);
     }
-    if (steps == 0) steps = 1;
 
     float xinc = (float)(dx) / (float)steps;
     float yinc = (float)(dy) / (float)steps;
