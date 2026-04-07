@@ -2,10 +2,10 @@
 #include<GL/glut.h>
 using namespace std;
 
-int xa,ya,xb,yb,flag=0;
+int xa,ya,xb,yb;
 
 
-void Bresline(int xa, int ya, int xb, int yb)
+void Bresline(int xa, int ya, int xb, int yb,int flag)
 {
     glClear(GL_COLOR_BUFFER_BIT);
     glBegin(GL_POINTS);
@@ -15,8 +15,8 @@ void Bresline(int xa, int ya, int xb, int yb)
     int dy = yb-ya;
     int d = 2*abs(dy) - abs(dx);
     
-    if(abs(dx)>abs(dy))
-    {
+    //if(abs(dx)>abs(dy))
+    //{
     	if(dx>0)
     	{
     		c=xa;
@@ -66,7 +66,7 @@ void Bresline(int xa, int ya, int xb, int yb)
 				glVertex2d(r,c);
 			}
     	}
-    }
+    //}
          
     glEnd();
     glFlush();
@@ -78,13 +78,11 @@ void draw()
 	int dy = yb - ya;
 	if(abs(dx)>abs(dy))
 	{
-		flag=0;
-		Bresline(xa,ya,xb,yb);
+		Bresline(xa,ya,xb,yb,0);
 	}
 	else
 	{	
-		flag=1;
-		Bresline(ya,xa,yb,xb);
+		Bresline(ya,xa,yb,xb,1);
 	}
 }
 
