@@ -72,7 +72,7 @@ void Bresline(int xa, int ya, int xb, int yb)
     glFlush();
 }
 
-void draw
+void draw()
 {
 	int dx = xb - xa;
 	int dy = yb - ya;
