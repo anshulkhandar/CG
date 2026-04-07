@@ -272,11 +272,11 @@ void draw()
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
     linecliping();
 
-    glutInit();
+    glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(640, 480);
     glutInitWindowPosition(0, 0);
