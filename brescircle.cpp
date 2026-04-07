@@ -3,7 +3,7 @@
 using namespace std;
 
 int xc, yc, r;
-int select;
+int algorithm;
 void brescircle()
 {  
   int x = 0;
@@ -71,7 +71,7 @@ void draw()
   glClear(GL_COLOR_BUFFER_BIT);
   glBegin(GL_POINTS);
 
-  if (select==1)
+  if (algorithm==1)
   {
     brescircle();
   }
@@ -104,10 +104,10 @@ int main(int argc, char **argv)
 
   switch (option)
   {
-    case 1: select = 1;
+    case 1: algorithm = 1;
     break;
 
-    case 2: select = 2;
+    case 2: algorithm = 2;
     break;
   }
   glutInit(&argc, argv);
